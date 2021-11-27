@@ -1,14 +1,4 @@
-/**
- *Submitted for verification at polygonscan.com on 2021-06-30
-*/
-
-// Sources flattened with hardhat v2.1.2 https://hardhat.org
-
-// SPDX-License-Identifier: UNLICENSED
-// ALL RIGHTS RESERVED
-// Unicrypt by SDDTech reserves all rights on this TokenVesting code, with the exception of imported libraries
-// such as those from openzepplin. You may NOT copy the Unicrypt TokenVesting contracts.
-
+/
 // File contracts/TransferHelper.sol
 
 // SPDX: GPL-2.0-or-later
