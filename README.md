@@ -1,2 +1,2 @@
 # davidkilledit
-Satrseed Exchange repo, built with love, att David.
+Starseed Exchange repo, built with love, att David.
