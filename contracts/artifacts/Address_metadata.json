@@ -1,0 +1,46 @@
+{
+	"compiler": {
+		"version": "0.6.12+commit.27d51765"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [],
+		"devdoc": {
+			"details": "Collection of functions related to the address type",
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/MasterChefV2.sol": "Address"
+		},
+		"evmVersion": "istanbul",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": true,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/MasterChefV2.sol": {
+			"keccak256": "0xf435e0c585556cf554ed813a1f8053adab4eb95a8fe6dec44b9e774e95890831",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://65a01679069387e25d5f5240ecf33d6caa423d5dd8fc2bead43783c00c40f608",
+				"dweb:/ipfs/QmcNccg1Cxjhc44zd6tzmEnig5gar9y6ucDrKdBSDkLaSH"
+			]
+		}
+	},
+	"version": 1
+}
