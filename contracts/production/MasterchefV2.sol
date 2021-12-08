@@ -2,7 +2,7 @@
 
 // OpenZeppelin Contracts v4.4.0 (utils/Context.sol)
 
-pragma solidity 0.8.7;
+pragma solidity 0.8.9;
 
 /**
  * @dev Provides information about the current execution context, including the
@@ -27,7 +27,7 @@ abstract contract Context {
 
 // OpenZeppelin Contracts v4.4.0 (utils/math/SafeMath.sol)
 
-pragma solidity 0.8.7;
+pragma solidity 0.8.9;
 
 // CAUTION
 // This version of SafeMath should only be used with Solidity 0.8 or later,
@@ -253,9 +253,92 @@ library SafeMath {
 }
 
 
+// OpenZeppelin Contracts v4.4.0 (token/ERC20/IERC20.sol)
+
+pragma solidity ^0.8.0;
+
+/**
+ * @dev Interface of the ERC20 standard as defined in the EIP.
+ */
+interface IERC20 {
+    /**
+     * @dev Returns the amount of tokens in existence.
+     */
+    function totalSupply() external view returns (uint256);
+
+    /**
+     * @dev Returns the amount of tokens owned by `account`.
+     */
+    function balanceOf(address account) external view returns (uint256);
+
+    /**
+     * @dev Moves `amount` tokens from the caller's account to `recipient`.
+     *
+     * Returns a boolean value indicating whether the operation succeeded.
+     *
+     * Emits a {Transfer} event.
+     */
+    function transfer(address recipient, uint256 amount) external returns (bool);
+
+    /**
+     * @dev Returns the remaining number of tokens that `spender` will be
+     * allowed to spend on behalf of `owner` through {transferFrom}. This is
+     * zero by default.
+     *
+     * This value changes when {approve} or {transferFrom} are called.
+     */
+    function allowance(address owner, address spender) external view returns (uint256);
+
+    /**
+     * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
+     *
+     * Returns a boolean value indicating whether the operation succeeded.
+     *
+     * IMPORTANT: Beware that changing an allowance with this method brings the risk
+     * that someone may use both the old and the new allowance by unfortunate
+     * transaction ordering. One possible solution to mitigate this race
+     * condition is to first reduce the spender's allowance to 0 and set the
+     * desired value afterwards:
+     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
+     *
+     * Emits an {Approval} event.
+     */
+    function approve(address spender, uint256 amount) external returns (bool);
+
+    /**
+     * @dev Moves `amount` tokens from `sender` to `recipient` using the
+     * allowance mechanism. `amount` is then deducted from the caller's
+     * allowance.
+     *
+     * Returns a boolean value indicating whether the operation succeeded.
+     *
+     * Emits a {Transfer} event.
+     */
+    function transferFrom(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) external returns (bool);
+
+    /**
+     * @dev Emitted when `value` tokens are moved from one account (`from`) to
+     * another (`to`).
+     *
+     * Note that `value` may be zero.
+     */
+    event Transfer(address indexed from, address indexed to, uint256 value);
+
+    /**
+     * @dev Emitted when the allowance of a `spender` for an `owner` is set by
+     * a call to {approve}. `value` is the new allowance.
+     */
+    event Approval(address indexed owner, address indexed spender, uint256 value);
+}
+
+
 // OpenZeppelin Contracts v4.4.0 (utils/Address.sol)
 
-pragma solidity 0.8.7;
+pragma solidity 0.8.9;
 
 /**
  * @dev Collection of functions related to the address type
@@ -471,9 +554,107 @@ library Address {
 }
 
 
+// OpenZeppelin Contracts v4.4.0 (token/ERC20/utils/SafeERC20.sol)
+
+pragma solidity 0.8.9;
+
+/**
+ * @title SafeERC20
+ * @dev Wrappers around ERC20 operations that throw on failure (when the token
+ * contract returns false). Tokens that return no value (and instead revert or
+ * throw on failure) are also supported, non-reverting calls are assumed to be
+ * successful.
+ * To use this library you can add a `using SafeERC20 for IERC20;` statement to your contract,
+ * which allows you to call the safe operations as `token.safeTransfer(...)`, etc.
+ */
+library SafeERC20 {
+    using Address for address;
+
+    function safeTransfer(
+        IERC20 token,
+        address to,
+        uint256 value
+    ) internal {
+        _callOptionalReturn(token, abi.encodeWithSelector(token.transfer.selector, to, value));
+    }
+
+    function safeTransferFrom(
+        IERC20 token,
+        address from,
+        address to,
+        uint256 value
+    ) internal {
+        _callOptionalReturn(token, abi.encodeWithSelector(token.transferFrom.selector, from, to, value));
+    }
+
+    /**
+     * @dev Deprecated. This function has issues similar to the ones found in
+     * {IERC20-approve}, and its usage is discouraged.
+     *
+     * Whenever possible, use {safeIncreaseAllowance} and
+     * {safeDecreaseAllowance} instead.
+     */
+    function safeApprove(
+        IERC20 token,
+        address spender,
+        uint256 value
+    ) internal {
+        // safeApprove should only be called when setting an initial allowance,
+        // or when resetting it to zero. To increase and decrease it, use
+        // 'safeIncreaseAllowance' and 'safeDecreaseAllowance'
+        require(
+            (value == 0) || (token.allowance(address(this), spender) == 0),
+            "SafeERC20: approve from non-zero to non-zero allowance"
+        );
+        _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, value));
+    }
+
+    function safeIncreaseAllowance(
+        IERC20 token,
+        address spender,
+        uint256 value
+    ) internal {
+        uint256 newAllowance = token.allowance(address(this), spender) + value;
+        _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, newAllowance));
+    }
+
+    function safeDecreaseAllowance(
+        IERC20 token,
+        address spender,
+        uint256 value
+    ) internal {
+        unchecked {
+            uint256 oldAllowance = token.allowance(address(this), spender);
+            require(oldAllowance >= value, "SafeERC20: decreased allowance below zero");
+            uint256 newAllowance = oldAllowance - value;
+            _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, newAllowance));
+        }
+    }
+
+    /**
+     * @dev Imitates a Solidity high-level call (i.e. a regular function call to a contract), relaxing the requirement
+     * on the return value: the return value is optional (but if data is returned, it must not be false).
+     * @param token The token targeted by the call.
+     * @param data The call data (encoded using abi.encode or one of its variants).
+     */
+    function _callOptionalReturn(IERC20 token, bytes memory data) private {
+        // We need to perform a low level call here, to bypass Solidity's return data size checking mechanism, since
+        // we're implementing it ourselves. We use {Address.functionCall} to perform this call, which verifies that
+        // the target address contains contract code and also asserts for success in the low-level call.
+
+        bytes memory returndata = address(token).functionCall(data, "SafeERC20: low-level call failed");
+        if (returndata.length > 0) {
+            // Return data is optional
+            require(abi.decode(returndata, (bool)), "SafeERC20: ERC20 operation did not succeed");
+        }
+    }
+}
+
+
+
 // OpenZeppelin Contracts v4.4.0 (access/Ownable.sol)
 
-pragma solidity 0.8.7;
+pragma solidity 0.8.9;
 
 /**
  * @dev Contract module which provides a basic access control mechanism, where
@@ -546,9 +727,73 @@ abstract contract Ownable is Context {
 }
 
 
-// File @uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router01.sol@v1.1.0-beta.0
+// OpenZeppelin Contracts v4.4.0 (security/ReentrancyGuard.sol)
 
-pragma solidity >=0.6.2;
+pragma solidity 0.8.9;
+
+/**
+ * @dev Contract module that helps prevent reentrant calls to a function.
+ *
+ * Inheriting from `ReentrancyGuard` will make the {nonReentrant} modifier
+ * available, which can be applied to functions to make sure there are no nested
+ * (reentrant) calls to them.
+ *
+ * Note that because there is a single `nonReentrant` guard, functions marked as
+ * `nonReentrant` may not call one another. This can be worked around by making
+ * those functions `private`, and then adding `external` `nonReentrant` entry
+ * points to them.
+ *
+ * TIP: If you would like to learn more about reentrancy and alternative ways
+ * to protect against it, check out our blog post
+ * https://blog.openzeppelin.com/reentrancy-after-istanbul/[Reentrancy After Istanbul].
+ */
+abstract contract ReentrancyGuard {
+    // Booleans are more expensive than uint256 or any type that takes up a full
+    // word because each write operation emits an extra SLOAD to first read the
+    // slot's contents, replace the bits taken up by the boolean, and then write
+    // back. This is the compiler's defense against contract upgrades and
+    // pointer aliasing, and it cannot be disabled.
+
+    // The values being non-zero value makes deployment a bit more expensive,
+    // but in exchange the refund on every call to nonReentrant will be lower in
+    // amount. Since refunds are capped to a percentage of the total
+    // transaction's gas, it is best to keep them low in cases like this one, to
+    // increase the likelihood of the full refund coming into effect.
+    uint256 private constant _NOT_ENTERED = 1;
+    uint256 private constant _ENTERED = 2;
+
+    uint256 private _status;
+
+    constructor() {
+        _status = _NOT_ENTERED;
+    }
+
+    /**
+     * @dev Prevents a contract from calling itself, directly or indirectly.
+     * Calling a `nonReentrant` function from another `nonReentrant`
+     * function is not supported. It is possible to prevent this from happening
+     * by making the `nonReentrant` function external, and making it call a
+     * `private` function that does the actual work.
+     */
+    modifier nonReentrant() {
+        // On the first call to nonReentrant, _notEntered will be true
+        require(_status != _ENTERED, "ReentrancyGuard: reentrant call");
+
+        // Any calls to nonReentrant after this point will fail
+        _status = _ENTERED;
+
+        _;
+
+        // By storing the original value once again, a refund is triggered (see
+        // https://eips.ethereum.org/EIPS/eip-2200)
+        _status = _NOT_ENTERED;
+    }
+}
+
+
+// File @uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol@v1.0.1
+
+pragma solidity >=0.5.0;
 
 interface IUniswapV2Factory {
     event PairCreated(address indexed token0, address indexed token1, address pair, uint);
@@ -565,6 +810,11 @@ interface IUniswapV2Factory {
     function setFeeTo(address) external;
     function setFeeToSetter(address) external;
 }
+
+
+// File @uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router01.sol@v1.1.0-beta.0
+
+pragma solidity >=0.6.2;
 
 interface IUniswapV2Router01 {
     function factory() external pure returns (address);
@@ -706,10 +956,7 @@ interface IUniswapV2Router02 is IUniswapV2Router01 {
     ) external;
 }
 
-
-// File StarToken.sol
-
-pragma solidity 0.8.7;
+pragma solidity 0.8.9;
 
 interface ERC20 {
     function totalSupply() external view returns (uint256);
@@ -728,7 +975,7 @@ interface ERC20 {
     event Approval(address indexed owner, address indexed spender, uint256 value);
 }
 
-contract StarToken is Context, ERC20, Ownable {
+contract xStarToken is Context, ERC20, Ownable {
     using SafeMath for uint256;
     using Address for address;
 
@@ -755,36 +1002,38 @@ contract StarToken is Context, ERC20, Ownable {
     uint256 private _rTotal = (MAX - (MAX % _tTotal));
     uint256 private _tFeeTotal;
 
-    string private _name = "STAR";
-    string private _symbol = "STAR";
+    string private _name = "xStar";
+    string private _symbol = "xSTAR";
     uint8 private _decimals = 18;
 
     uint256 public _taxFee = 0;
     uint256 private _previousTaxFee = _taxFee;
-    uint256 public constant MAX_TAX_FEE = 1000;
+    uint256 public constant MAX_TAX_FEE = 100;
 
     uint256 public _liquidityFee = 5;
     uint256 private _previousLiquidityFee = _liquidityFee;
-    uint256 public constant MAX_LIQUIDITY_FEE = 1000;
+    uint256 public constant MAX_LIQUIDITY_FEE = 100;
 
-    uint256 public _fundOrBurnFee = 0.004285714;
+    uint256 public _fundOrBurnFee = 4;
     uint256 private _previousFundOrBurnFee = _fundOrBurnFee;
-    
-    uint256 public _devFee = 0.005;
-    uint256 private _previousDevFee = _devFee;
+    uint256 public constant MAX_FUND_OR_BURN_FEE = 100;
 
-    // Default zero for presale. After presale set to a greater amount
+    uint256 public _devFee = 5;
+    uint256 private _previousDevFee = _devFee;
+    uint256 public constant MAX_DEV_FEE = 100;
+
+    // Antiwhale
     uint256 public _maxTxAmount = 0;
     uint256 public constant MIN_TX_AMOUNT_HARD_CAP = 1 * 10 ** 18;
 
-    uint256 private minimumTokensBeforeSwap = 1000 * 10 ** 18;
-    uint256 private buyBackUpperLimit = 100 * 10 ** 10;       //100 * 0.0001 DHV
+    uint256 private minimumTokensBeforeSwap = 100 * 10 ** 18;
+    uint256 private buyBackUpperLimit = 1000 * 10 ** 18;     
 
     // Minimum DHV balance before buyback IF lower than this number no buyback
-    uint256 public minimumBalanceRequired = 1 * 10 ** 10;   //0.0001 DHV
+    uint256 public minimumBalanceRequired = 10 * 10 ** 18;   
 
     // Minimum STAR sell order to trigger buyback
-    uint256 public minimumSellOrderAmount = 1000 * 10 ** 18;
+    uint256 public minimumSellOrderAmount = 100 * 10 ** 18;
 
     IUniswapV2Router02 public uniswapV2Router;
     address public uniswapV2Pair;
@@ -801,7 +1050,10 @@ contract StarToken is Context, ERC20, Ownable {
     event SwapTokensForETH(uint256 amountIn, address[] path);
     event UpdateTaxFee(uint256 newRate);
     event UpdateLiquidityFee(uint256 newRate);
+    event UpdateFundOrBurnFee(uint256 newRate);
+    event UpdateDevFee(uint256 newRate);
     event UpdateMaxTxAmount(uint256 newAmount);
+    
 
     modifier lockTheSwap {
         inSwapAndLiquify = true;
@@ -817,15 +1069,12 @@ contract StarToken is Context, ERC20, Ownable {
         uint256 tLiquidity;
     }
 
-constructor () {
+    constructor () {
         _rOwned[_msgSender()] = _rTotal;
 
-        // PancakeSwap Router address:
-        // (BSC testnet) 0xD99D1c33F9fC3444f8101754aBC46c52416550D1
-        // (BSC mainnet) V2 0x10ED43C718714eb63d5aA57B78B54704E256024E
         // (Uniswap) V2 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D
         // Quickswap 0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff
-        IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
+        IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff);
          // Create a uniswap pair for this new token
         uniswapV2Pair = IUniswapV2Factory(_uniswapV2Router.factory()).createPair(address(this), _uniswapV2Router.WETH());
 
@@ -918,10 +1167,10 @@ constructor () {
     function reflectionFromToken(uint256 tAmount, bool deductTransferFee) public view returns (uint256) {
         require(tAmount <= _tTotal, "Amount must be less than supply");
         if (!deductTransferFee) {
-            (uint256 rAmount,,,,,) = _getValues(tAmount);
+            (uint256 rAmount,,,,,,,) = _getValues(tAmount);
             return rAmount;
         } else {
-            (,uint256 rTransferAmount,,,,) = _getValues(tAmount);
+            (,uint256 rTransferAmount,,,,,,) = _getValues(tAmount);
             return rTransferAmount;
         }
     }
@@ -933,7 +1182,6 @@ constructor () {
     }
 
     function excludeFromReward(address account) public onlyOwner() {
-
         require(!_isExcluded[account], "Account is already excluded");
         if (_rOwned[account] > 0) {
             _tOwned[account] = tokenFromReflection(_rOwned[account]);
@@ -1180,7 +1428,7 @@ constructor () {
         return (fees);
     }
 
-   function _getRValues(uint256 tAmount, uint256 tFee, uint256 tDev, uint256 tLiquidity, uint256 tFundOrBurn, uint256 currentRate) private pure returns (uint256, uint256, uint256) {
+    function _getRValues(uint256 tAmount, uint256 tFee, uint256 tDev, uint256 tLiquidity, uint256 tFundOrBurn, uint256 currentRate) private pure returns (uint256, uint256, uint256) {
         uint256 rAmount = tAmount.mul(currentRate);
         uint256 rFee = tFee.mul(currentRate);
         uint256 rDev = tDev.mul(currentRate);
@@ -1242,18 +1490,18 @@ constructor () {
         return _amount.mul(_taxFee).div(10000);
     }
 
-     function calculateDevFee(uint256 _amount) private view returns (uint256) {
-        return _amount.mul(_devFee).div(10**2);
+    function calculateDevFee(uint256 _amount) private view returns (uint256) {
+        return _amount.mul(_devFee).div(10000);
     }
     function calculateFundOrBurnFee(uint256 _amount) private view returns (uint256) {
-        return _amount.mul(_fundOrBurnFee).div(10**2);
+        return _amount.mul(_fundOrBurnFee).div(10000);
     }
 
     function calculateLiquidityFee(uint256 _amount) private view returns (uint256) {
         return _amount.mul(_liquidityFee).div(10000);
     }
 
-     function removeAllFee() private {
+    function removeAllFee() private {
         if(_taxFee == 0 && _liquidityFee == 0) return;
 
         _previousTaxFee = _taxFee;
@@ -1267,7 +1515,7 @@ constructor () {
         _liquidityFee = 0;
     }
 
-   function restoreAllFee() private {
+    function restoreAllFee() private {
         _taxFee = _previousTaxFee;
         _devFee = _previousDevFee;
         _fundOrBurnFee = _previousFundOrBurnFee;
@@ -1294,11 +1542,17 @@ constructor () {
     }
 
     function setFundOrBurnFeePercent(uint256 fundorBurnFee) external onlyOwner {
+        require(fundorBurnFee <= MAX_FUND_OR_BURN_FEE, "fundOrBurnFee is too high");
         _fundOrBurnFee = fundorBurnFee;
+
+        emit UpdateFundOrBurnFee(fundorBurnFee);
     }
     
-    function setDevFeePercent(uint256 devFee) external onlyOwner {
+    function setDevFeePercent(uint256 devFee) external onlyOwner () {
+        require(devFee <= MAX_DEV_FEE, "devFee is too high");
         _devFee = devFee;
+
+        emit UpdateDevFee(devFee);
     }
 
     function setLiquidityFeePercent(uint256 liquidityFee) external onlyOwner() {
@@ -1320,7 +1574,7 @@ constructor () {
     }
 
     function setBuybackUpperLimit(uint256 buyBackLimit) external onlyOwner() {
-        buyBackUpperLimit = buyBackLimit * 10 ** 18;
+        buyBackUpperLimit = buyBackLimit * 10000 ** 18;
     }
 
     function setSwapAndLiquifyEnabled(bool _enabled) public onlyOwner {
@@ -1386,4 +1640,410 @@ constructor () {
 
     //to receive ETH from uniswapV2Router when swapping
     receive() external payable {}
+}
+
+
+// File MasterChefV2.sol
+
+pragma solidity 0.8.9;
+// MasterChef is the master of STAR. It can make STAR and is a fair.
+//
+// Note that it's ownable and the owner wields tremendous power. The ownership
+// will be transferred to a governance smart contract once STAR is sufficiently
+// distributed and the community can show to govern itself.
+//
+// Have fun reading it. Hopefully it's bug-free. God bless.
+contract MasterChefV2 is Ownable, ReentrancyGuard {
+    using SafeMath for uint256;
+    using SafeERC20 for IERC20;
+
+    // Info of each user.
+    struct UserInfo {
+        uint256 amount;           // How many LP tokens the user has provided.
+        uint256 rewardDebt;       // Reward debt. See explanation below.
+        uint256 rewardLockedUp;   // Reward locked up.
+        uint256 nextHarvestUntil; // When can the user harvest again.
+        //
+        // We do some fancy math here. Basically, any point in time, the amount of STAR
+        // entitled to a user but is pending to be distributed is:
+        //
+        //   pending reward = (user.amount * pool.accStarPerShare) - user.rewardDebt
+        //
+        // Whenever a user deposits or withdraws LP tokens to a pool. Here's what happens:
+        //   1. The pool's `accStarPerShare` (and `lastRewardBlock`) gets updated.
+        //   2. User receives the pending reward sent to his/her address.
+        //   3. User's `amount` gets updated.
+        //   4. User's `rewardDebt` gets updated.
+
+    }
+
+    // Info of each pool.
+    struct PoolInfo {
+        IERC20 lpToken;             // Address of LP token contract.
+        uint256 allocPoint;         // How many allocation points assigned to this pool. STAR to distribute per block.
+        uint256 lastRewardBlock;    // Last block number that STAR distribution occurs.
+        uint256 accStarPerShare; // Accumulated STAR per share, times 1e12. See below.
+        uint16 depositFeeBP;        // Deposit fee in basis points
+        uint256 harvestInterval;    // Harvest interval in seconds
+        uint256 totalLp;            // Total Token in Pool
+    }
+
+    // The STAR TOKEN!
+    xStarToken public star;
+    // The operator can only update EmissionRate and AllocPoint to protect tokenomics
+    //i.e some wrong setting and a pools get too much allocation accidentally
+    address private _operator;
+    // Dev address.
+    address public devAddress = 0xa039fDB0F816023105F7D9f4BbC11F71CAbB76f1;
+    // Deposit Fee address
+    address public feeAddress = 0xa039fDB0F816023105F7D9f4BbC11F71CAbB76f1;
+    // STAR tokens created per block.
+    uint256 public starPerBlock;
+    uint256 public constant MAX_STAR_PER_BLOCK = 126 * 6 ** 18;
+    // Bonus multiplier for early star makers.
+    uint256 public constant BONUS_MULTIPLIER = 11;
+    // Max harvest interval: 14 days.
+    uint256 public constant MAXIMUM_HARVEST_INTERVAL = 14 days;
+    // Info of each pool.
+    PoolInfo[] public poolInfo;
+    // Info of each user that stakes LP tokens.
+    mapping(uint256 => mapping(address => UserInfo)) public userInfo;
+    // Total allocation points. Must be the sum of all allocation points in all pools.
+    uint256 public totalAllocPoint = 10000;
+    // The block number when STAR mining starts.
+    uint256 public startBlock = 22403724;
+    // Total locked up rewards
+    uint256 public totalLockedUpRewards;
+    // Total STAR in STAR Pools (can be multiple pools)
+    uint256 public totalStarInPools;
+
+    // Maximum deposit fee rate: 10%
+    uint16 public constant MAXIMUM_DEPOSIT_FEE_RATE = 1000;
+
+    event Deposit(address indexed user, uint256 indexed pid, uint256 amount);
+    event Withdraw(address indexed user, uint256 indexed pid, uint256 amount);
+    event EmergencyWithdraw(address indexed user, uint256 indexed pid, uint256 amount);
+    event EmissionRateUpdated(address indexed caller, uint256 previousAmount, uint256 newAmount);
+    event RewardLockedUp(address indexed user, uint256 indexed pid, uint256 amountLockedUp);
+    event OperatorTransferred(address indexed previousOperator, address indexed newOperator);
+
+    modifier onlyOperator() {
+        require(_operator == msg.sender, "Operator: caller is not the operator");
+        _;
+    }
+
+    constructor(
+        xStarToken _star,
+        uint256 _starPerBlock
+    ) {
+        //StartBlock always many years later from contract construct, will be set later in StartFarming function
+        startBlock = block.number + (10 * 365 * 24 * 60 * 60);
+
+        star = _star;
+        starPerBlock = _starPerBlock;
+
+        devAddress = msg.sender;
+        feeAddress = msg.sender;
+        _operator = msg.sender;
+        emit OperatorTransferred(address(0), _operator);
+    }
+
+    function operator() public view returns (address) {
+        return _operator;
+    }
+
+    function transferOperator(address newOperator) public onlyOperator {
+        require(newOperator != address(0), "TransferOperator: new operator is the zero address");
+        emit OperatorTransferred(_operator, newOperator);
+        _operator = newOperator;
+    }
+
+    // Set farming start, can call only once
+    function startFarming() public onlyOwner {
+        require(block.number < startBlock, "Error::Farm started already");
+
+        uint256 length = poolInfo.length;
+        for (uint256 pid = 0; pid < length; ++pid) {
+            PoolInfo storage pool = poolInfo[pid];
+            pool.lastRewardBlock = block.number;
+        }
+
+        startBlock = block.number;
+    }
+
+    function poolLength() external view returns (uint256) {
+        return poolInfo.length;
+    }
+
+    //actual STAR left in MasterChef can be used in rewards, must excluding all in STAR pools
+    //this function is for safety check only not used anywhere
+    function remainRewards() external view returns (uint256) {
+        return star.balanceOf(address(this)).sub(totalStarInPools);
+    }
+
+    // Add a new lp to the pool. Can only be called by the owner.
+    // Can add multiple pool with same lp token without messing up rewards, because each pool's balance is tracked using its own totalLp
+    function add(uint256 _allocPoint, IERC20 _lpToken, uint16 _depositFeeBP, uint256 _harvestInterval, bool _withUpdate) public onlyOwner {
+        require(_depositFeeBP <= MAXIMUM_DEPOSIT_FEE_RATE, "add: deposit fee too high");
+        require(_harvestInterval <= MAXIMUM_HARVEST_INTERVAL, "add: invalid harvest interval");
+        if (_withUpdate) {
+            massUpdatePools();
+        }
+        uint256 lastRewardBlock = block.number > startBlock ? block.number : startBlock;
+        totalAllocPoint = totalAllocPoint.add(_allocPoint);
+        poolInfo.push(PoolInfo({
+        lpToken : _lpToken,
+        allocPoint : _allocPoint,
+        lastRewardBlock : lastRewardBlock,
+        accStarPerShare : 0,
+        depositFeeBP : _depositFeeBP,
+        harvestInterval : _harvestInterval,
+        totalLp : 0
+        }));
+    }
+
+    // Update the given pool's STAR allocation point and deposit fee. Can only be called by the owner.
+    function set(uint256 _pid, uint256 _allocPoint, uint16 _depositFeeBP, uint256 _harvestInterval, bool _withUpdate) public onlyOwner {
+        require(_depositFeeBP <= MAXIMUM_DEPOSIT_FEE_RATE, "set: deposit fee too high");
+        require(_harvestInterval <= MAXIMUM_HARVEST_INTERVAL, "set: invalid harvest interval");
+        if (_withUpdate) {
+            massUpdatePools();
+        }
+        totalAllocPoint = totalAllocPoint.sub(poolInfo[_pid].allocPoint).add(_allocPoint);
+        poolInfo[_pid].allocPoint = _allocPoint;
+        poolInfo[_pid].depositFeeBP = _depositFeeBP;
+        poolInfo[_pid].harvestInterval = _harvestInterval;
+    }
+
+    // Return reward multiplier over the given _from to _to block.
+    function getMultiplier(uint256 _from, uint256 _to) public pure returns (uint256) {
+        return _to.sub(_from).mul(BONUS_MULTIPLIER);
+    }
+
+    // View function to see pending STAR on frontend.
+    function pendingStar(uint256 _pid, address _user) external view returns (uint256) {
+        PoolInfo storage pool = poolInfo[_pid];
+        UserInfo storage user = userInfo[_pid][_user];
+        uint256 accStarPerShare = pool.accStarPerShare;
+        uint256 lpSupply = pool.totalLp;
+
+        if (block.number > pool.lastRewardBlock && lpSupply != 0) {
+            uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number);
+            uint256 starReward = multiplier.mul(starPerBlock).mul(pool.allocPoint).div(totalAllocPoint);
+            accStarPerShare = accStarPerShare.add(starReward.mul(1e12).div(lpSupply));
+        }
+        uint256 pending = user.amount.mul(accStarPerShare).div(1e12).sub(user.rewardDebt);
+        return pending.add(user.rewardLockedUp);
+    }
+
+    // View function to see if user can harvest STAR.
+    function canHarvest(uint256 _pid, address _user) public view returns (bool) {
+        UserInfo storage user = userInfo[_pid][_user];
+        return block.number >= startBlock && block.timestamp >= user.nextHarvestUntil;
+    }
+
+    //this function make sure even thousands of pool gas fee is still low because transfer is just 1 time
+    function massUpdatePools() public {
+        uint256 length = poolInfo.length;
+        uint256 totalReward = 0;
+
+        for (uint256 pid = 0; pid < length; ++pid) {
+            PoolInfo storage pool = poolInfo[pid];
+            if (block.number <= pool.lastRewardBlock) {
+                continue;
+            }
+
+            if (pool.totalLp == 0 || pool.allocPoint == 0) {
+                pool.lastRewardBlock = block.number;
+                continue;
+            }
+
+            uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number);
+            uint256 starReward = multiplier.mul(starPerBlock).mul(pool.allocPoint).div(totalAllocPoint);
+
+            pool.accStarPerShare = pool.accStarPerShare.add(starReward.mul(1e12).div(pool.totalLp));
+            pool.lastRewardBlock = block.number;
+
+            totalReward.add(starReward.div(10));
+        }
+
+        safeStarTransfer(devAddress, totalReward);
+    }
+
+    // Update reward variables of the given pool to be up-to-date.
+    function updatePool(uint256 _pid) public {
+        PoolInfo storage pool = poolInfo[_pid];
+        if (block.number <= pool.lastRewardBlock) {
+            return;
+        }
+
+        if (pool.totalLp == 0 || pool.allocPoint == 0) {
+            pool.lastRewardBlock = block.number;
+            return;
+        }
+
+        uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number);
+        uint256 starReward = multiplier.mul(starPerBlock).mul(pool.allocPoint).div(totalAllocPoint);
+
+        pool.accStarPerShare = pool.accStarPerShare.add(starReward.mul(1e12).div(pool.totalLp));
+        pool.lastRewardBlock = block.number;
+
+        safeStarTransfer(devAddress, starReward.div(10));
+    }
+
+    // Deposit LP tokens to MasterChef for STAR allocation.
+    function deposit(uint256 _pid, uint256 _amount) public nonReentrant {
+        require(block.number >= startBlock, "MasterChef:: Can not deposit before farm start");
+
+        PoolInfo storage pool = poolInfo[_pid];
+        UserInfo storage user = userInfo[_pid][msg.sender];
+        updatePool(_pid);
+        payOrLockupPendingStar(_pid);
+        if (_amount > 0) {
+            uint256 beforeDeposit = pool.lpToken.balanceOf(address(this));
+            pool.lpToken.safeTransferFrom(address(msg.sender), address(this), _amount);
+            uint256 afterDeposit = pool.lpToken.balanceOf(address(this));
+
+            _amount = afterDeposit.sub(beforeDeposit);
+
+            if (pool.depositFeeBP > 0) {
+                uint256 depositFee = _amount.mul(pool.depositFeeBP).div(10000);
+                pool.lpToken.safeTransfer(feeAddress, depositFee);
+                user.amount = user.amount.add(_amount).sub(depositFee);
+                pool.totalLp = pool.totalLp.add(_amount).sub(depositFee);
+
+                if (address(pool.lpToken) == address(star)) {
+                    totalStarInPools = totalStarInPools.add(_amount).sub(depositFee);
+                }
+            } else {
+                user.amount = user.amount.add(_amount);
+                pool.totalLp = pool.totalLp.add(_amount);
+
+                if (address(pool.lpToken) == address(star)) {
+                    totalStarInPools = totalStarInPools.add(_amount);
+                }
+            }
+        }
+        user.rewardDebt = user.amount.mul(pool.accStarPerShare).div(1e12);
+        emit Deposit(msg.sender, _pid, _amount);
+    }
+
+    // Withdraw LP tokens from MasterChef.
+    function withdraw(uint256 _pid, uint256 _amount) public nonReentrant {
+        PoolInfo storage pool = poolInfo[_pid];
+        UserInfo storage user = userInfo[_pid][msg.sender];
+
+        require(user.amount >= _amount, "Withdraw: User amount not enough");
+        //this will make sure that user can only withdraw from his pool
+        //cannot withdraw more than pool's balance and from MasterChef's token
+        require(pool.totalLp >= _amount, "Withdraw: Pool total LP not enough");
+
+        updatePool(_pid);
+        payOrLockupPendingStar(_pid);
+        if (_amount > 0) {
+            user.amount = user.amount.sub(_amount);
+            pool.totalLp = pool.totalLp.sub(_amount);
+            if (address(pool.lpToken) == address(star)) {
+                totalStarInPools = totalStarInPools.sub(_amount);
+            }
+            pool.lpToken.safeTransfer(address(msg.sender), _amount);
+
+        }
+        user.rewardDebt = user.amount.mul(pool.accStarPerShare).div(1e12);
+        emit Withdraw(msg.sender, _pid, _amount);
+    }
+
+    // Withdraw without caring about rewards. EMERGENCY ONLY.
+    function emergencyWithdraw(uint256 _pid) public nonReentrant {
+        PoolInfo storage pool = poolInfo[_pid];
+        UserInfo storage user = userInfo[_pid][msg.sender];
+        uint256 amount = user.amount;
+
+        require(pool.totalLp >= amount, "EmergencyWithdraw: Pool total LP not enough");
+
+        user.amount = 0;
+        user.rewardDebt = 0;
+        user.rewardLockedUp = 0;
+        user.nextHarvestUntil = 0;
+        pool.totalLp = pool.totalLp.sub(amount);
+        if (address(pool.lpToken) == address(star)) {
+            totalStarInPools = totalStarInPools.sub(amount);
+        }
+        pool.lpToken.safeTransfer(address(msg.sender), amount);
+
+        emit EmergencyWithdraw(msg.sender, _pid, amount);
+    }
+
+    // Pay or lockup pending STAR.
+    function payOrLockupPendingStar(uint256 _pid) internal {
+        PoolInfo storage pool = poolInfo[_pid];
+        UserInfo storage user = userInfo[_pid][msg.sender];
+
+        if (user.nextHarvestUntil == 0 && block.number >= startBlock) {
+            user.nextHarvestUntil = block.timestamp.add(pool.harvestInterval);
+        }
+
+        uint256 pending = user.amount.mul(pool.accStarPerShare).div(1e12).sub(user.rewardDebt);
+        if (canHarvest(_pid, msg.sender)) {
+            if (pending > 0 || user.rewardLockedUp > 0) {
+                uint256 totalRewards = pending.add(user.rewardLockedUp);
+
+                // reset lockup
+                totalLockedUpRewards = totalLockedUpRewards.sub(user.rewardLockedUp);
+                user.rewardLockedUp = 0;
+                user.nextHarvestUntil = block.timestamp.add(pool.harvestInterval);
+
+                // send rewards
+                safeStarTransfer(msg.sender, totalRewards);
+            }
+        } else if (pending > 0) {
+            user.rewardLockedUp = user.rewardLockedUp.add(pending);
+            totalLockedUpRewards = totalLockedUpRewards.add(pending);
+            emit RewardLockedUp(msg.sender, _pid, pending);
+        }
+    }
+
+    // Safe STAR transfer function, just in case if rounding error causes pool do not have enough STAR.
+    function safeStarTransfer(address _to, uint256 _amount) internal {
+        if (star.balanceOf(address(this)) > totalStarInPools) {
+            //starBal = total STAR in MasterChef - total STAR in STAR pools, this will make sure that MasterChef never transfer rewards from deposited STAR pools
+            uint256 starBal = star.balanceOf(address(this)).sub(totalStarInPools);
+            if (_amount >= starBal) {
+                star.transfer(_to, starBal);
+            } else if (_amount > 0) {
+                star.transfer(_to, _amount);
+            }
+        }
+    }
+
+    // Update dev address by the previous dev.
+    function setDevAddress(address _devAddress) public {
+        require(msg.sender == devAddress, "setDevAddress: FORBIDDEN");
+        require(_devAddress != address(0), "setDevAddress: ZERO");
+        devAddress = _devAddress;
+    }
+
+    function setFeeAddress(address _feeAddress) public {
+        require(msg.sender == feeAddress, "setFeeAddress: FORBIDDEN");
+        require(_feeAddress != address(0), "setFeeAddress: ZERO");
+        feeAddress = _feeAddress;
+    }
+
+    // Pancake has to add hidden dummy pools in order to alter the emission, here we make it simple and transparent to all.
+    function updateEmissionRate(uint256 _starPerBlock) public onlyOperator {
+        require(_starPerBlock <= MAX_STAR_PER_BLOCK, "STAR per block too high");
+        massUpdatePools();
+
+        emit EmissionRateUpdated(msg.sender, starPerBlock, _starPerBlock);
+        starPerBlock = _starPerBlock;
+    }
+
+    function updateAllocPoint(uint256 _pid, uint256 _allocPoint, bool _withUpdate) public onlyOperator {
+        if (_withUpdate) {
+            massUpdatePools();
+        }
+
+        totalAllocPoint = totalAllocPoint.sub(poolInfo[_pid].allocPoint).add(_allocPoint);
+        poolInfo[_pid].allocPoint = _allocPoint;
+    }
 }

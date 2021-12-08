@@ -14,6 +14,8 @@
     
  */
 
+ // OpenZeppelin Contracts v4.4.0 (token/ERC20/IERC20.sol)
+
 pragma solidity ^0.8.7;
 
 /**
@@ -89,6 +91,8 @@ interface IERC20 {
      */
     event Approval(address indexed owner, address indexed spender, uint256 value);
 }
+
+// OpenZeppelin Contracts v4.4.0 (utils/math/SafeMath.sol)
 
 // CAUTION
 // This version of SafeMath should only be used with Solidity 0.8 or later,
@@ -305,6 +309,9 @@ library SafeMath {
     }
 }
 
+
+// OpenZeppelin Contracts v4.4.0 (utils/Context.sol)
+
 /*
  * @dev Provides information about the current execution context, including the
  * sender of the transaction and its data. While these are generally available
@@ -325,6 +332,9 @@ abstract contract Context {
         return msg.data;
     }
 }
+
+
+// OpenZeppelin Contracts v4.4.0 (utils/Address.sol)
 
 /**
  * @dev Collection of functions related to the address type
@@ -576,6 +586,9 @@ contract Ownable is Context {
     }
 }
 
+
+// File @uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol@v1.0.1
+
 interface IUniswapV2Factory {
     event PairCreated(address indexed token0, address indexed token1, address pair, uint);
 
@@ -591,6 +604,9 @@ interface IUniswapV2Factory {
     function setFeeTo(address) external;
     function setFeeToSetter(address) external;
 }
+
+
+// File @uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol
 
 interface IUniswapV2Pair {
     event Approval(address indexed owner, address indexed spender, uint value);
@@ -642,6 +658,9 @@ interface IUniswapV2Pair {
 
     function initialize(address, address) external;
 }
+
+
+// File @uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router01.sol@v1.1.0-beta.0
 
 interface IUniswapV2Router01 {
     function factory() external pure returns (address);
@@ -736,6 +755,9 @@ interface IUniswapV2Router01 {
     function getAmountsOut(uint amountIn, address[] calldata path) external view returns (uint[] memory amounts);
     function getAmountsIn(uint amountOut, address[] calldata path) external view returns (uint[] memory amounts);
 }
+
+
+// File @uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol@v1.1.0-beta.0
 
 interface IUniswapV2Router02 is IUniswapV2Router01 {
     function removeLiquidityETHSupportingFeeOnTransferTokens(

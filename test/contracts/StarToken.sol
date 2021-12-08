@@ -14,7 +14,7 @@
     
  */
 
-pragma solidity ^0.8.7;
+pragma solidity 0.8.9;
 
 /**
  * @dev Interface of the ERC20 standard as defined in the EIP.
