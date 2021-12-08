@@ -11,7 +11,6 @@
 // File @uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol@v1.0.1
 // File @uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router01.sol@v1.1.0-beta.0
 // File @uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol@v1.1.0-beta.0
-// File @uniswap/v2-periphery/contracts/interfacesUniswapV2Pair
 
 // File StarToken.sol
 // File MasterChefV2.sol
